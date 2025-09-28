@@ -1,0 +1,20 @@
+trigger:
+- main   # se ejecuta al hacer push a main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: "Build Docker Image"
+  jobs:
+  - job: BuildJob
+    displayName: "Docker Build Job"
+    steps:
+    - task: DockerInstaller@0
+      displayName: "Install Docker"
+
+    - script: |
+        echo "Building Docker image..."
+        docker build -t practica4-app .
+      displayName: "Build Docker Image"
