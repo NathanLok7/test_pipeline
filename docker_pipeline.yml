@@ -21,7 +21,7 @@ stages:
       displayName: Build and Push Backend Image
       inputs:
         command: buildAndPush
-        repository: your-dockerhub-username/back
+        repository: nathanlok/back
         dockerfile: ./back/Dockerfile
         tags: |
           latest
@@ -31,7 +31,7 @@ stages:
       displayName: Build and Push Frontend Image
       inputs:
         command: buildAndPush
-        repository: your-dockerhub-username/front
+        repository: nathanlok/front
         dockerfile: ./front/Dockerfile
         tags: |
           latest
