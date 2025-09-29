@@ -2,7 +2,7 @@ trigger:
 - main   # se ejecuta al hacer push a main
 
 pool:
-  vmImage: 'Default'
+  name: 'Default'
 
 stages:
 - stage: Build
