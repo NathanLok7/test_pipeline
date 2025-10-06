@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  name: default
+  name: default  
 
 stages:
 - stage: DeployAzure
@@ -11,36 +11,86 @@ stages:
   - job: AzureDeployJob
     displayName: "Azure Deployment Job"
     steps:
-    - script: |
-        echo "1️⃣ Creando Resource Group..."
-        echo "Resource Group: RG-Practica5"
+
+    # 1️⃣ Crear Resource Group
+    - task: AzureCLI@2
       displayName: "Create Resource Group"
+      inputs:
+        azureSubscription: 'azure-connection' 
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az group create --name RG-Practica5 --location eastus
 
-    - script: |
-        echo "2️⃣ Creando App Service Plan..."
-        echo "App Service Plan: Plan-Practica5"
+    # 2️⃣ Crear App Service Plan
+    - task: AzureCLI@2
       displayName: "Create App Service Plan"
+      inputs:
+        azureSubscription: 'azure-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az appservice plan create --name Plan-Practica5 \
+            --resource-group RG-Practica5 \
+            --sku B1 --is-linux
 
-    - script: |
-        echo "3️⃣ Creando Aplicación Web..."
-        echo "Web App: WebApp-Practica5"
-      displayName: "Create App Service"
+    # 3️⃣ Crear Web App
+    - task: AzureCLI@2
+      displayName: "Create Web App"
+      inputs:
+        azureSubscription: 'azure-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az webapp create --resource-group RG-Practica5 \
+            --plan Plan-Practica5 \
+            --name WebApp-Practica5 \
+            --deployment-container-image-name nginx:latest
 
-    - script: |
-        echo "4️⃣ Creando Base de Datos Elastic..."
-        echo "DB: DB-Practica5"
+    # 4️⃣ Crear Base de Datos Elastic (MySQL)
+    - task: AzureCLI@2
       displayName: "Create Elastic Database"
+      inputs:
+        azureSubscription: 'azure-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az mysql server create --resource-group RG-Practica5 \
+            --name DB-Practica5 --admin-user adminuser \
+            --admin-password 'TuPassword123!' --sku-name B_Gen5_1 \
+            --location eastus
 
-    - script: |
-        echo "5️⃣ Configurando conexión a Docker Hub..."
-        echo "Usuario: TU_USUARIO_DOCKER"
-      displayName: "DockerHub Connection"
+    # 5️⃣ Configurar Web App para conectarse a DockerHub (Backend)
+    - task: AzureCLI@2
+      displayName: "Deploy Backend Container"
+      inputs:
+        azureSubscription: 'azure-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az webapp config container set --name WebApp-Practica5 \
+            --resource-group RG-Practica5 \
+            --docker-custom-image-name nathanlok/back:latest \
+            --docker-registry-server-url https://index.docker.io \
+            --docker-registry-server-user nathanlok \
+            --docker-registry-server-password )+gYfucH_mV@w77
 
-    - script: |
-        echo "6️⃣ Desplegando backend y frontend..."
-        echo "Simulando deploy de contenedores a Web App"
-      displayName: "Deploy Containers"
+    # 6️⃣ Configurar Web App para conectarse a DockerHub (Frontend)
+    - task: AzureCLI@2
+      displayName: "Deploy Frontend Container"
+      inputs:
+        azureSubscription: 'azure-connection'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az webapp config container set --name WebApp-Practica5 \
+            --resource-group RG-Practica5 \
+            --docker-custom-image-name nathanlok/front:latest \
+            --docker-registry-server-url https://index.docker.io \
+            --docker-registry-server-user nathanlok \
+            --docker-registry-server-password )+gYfucH_mV@w77
 
+    # 7️⃣ Finalizar
     - script: |
-        echo "✅ Pipeline completo. Tomar screenshots de cada paso para evidencia."
+        echo "Pipeline completo."
       displayName: "Finalize Pipeline"
