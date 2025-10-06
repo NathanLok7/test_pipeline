@@ -2,7 +2,7 @@ trigger:
 - main   # se ejecuta al hacer push a main
 
 pool:
-  name: 'Default'
+  vmImage: ubuntu-latest   
 
 stages:
 - stage: Build
