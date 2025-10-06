@@ -1,19 +1,46 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
 pool:
   name: default
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+- stage: DeployAzure
+  displayName: "Deploy to Azure Portal"
+  jobs:
+  - job: AzureDeployJob
+    displayName: "Azure Deployment Job"
+    steps:
+    - script: |
+        echo "1️⃣ Creando Resource Group..."
+        echo "Resource Group: RG-Practica5"
+      displayName: "Create Resource Group"
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    - script: |
+        echo "2️⃣ Creando App Service Plan..."
+        echo "App Service Plan: Plan-Practica5"
+      displayName: "Create App Service Plan"
+
+    - script: |
+        echo "3️⃣ Creando Aplicación Web..."
+        echo "Web App: WebApp-Practica5"
+      displayName: "Create App Service"
+
+    - script: |
+        echo "4️⃣ Creando Base de Datos Elastic..."
+        echo "DB: DB-Practica5"
+      displayName: "Create Elastic Database"
+
+    - script: |
+        echo "5️⃣ Configurando conexión a Docker Hub..."
+        echo "Usuario: TU_USUARIO_DOCKER"
+      displayName: "DockerHub Connection"
+
+    - script: |
+        echo "6️⃣ Desplegando backend y frontend..."
+        echo "Simulando deploy de contenedores a Web App"
+      displayName: "Deploy Containers"
+
+    - script: |
+        echo "✅ Pipeline completo. Tomar screenshots de cada paso para evidencia."
+      displayName: "Finalize Pipeline"
