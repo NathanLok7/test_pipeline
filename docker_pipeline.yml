@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  name: default   # tu agente self-hosted
+  vmImage: ubuntu-latest   
 
 stages:
 - stage: BuildAndPush
